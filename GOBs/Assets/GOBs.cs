@@ -25,6 +25,7 @@ public class GOBs
 
 	public class Action
 	{
+		public string name;
 		public Goal[] targetGoals;
 		public float[] changes;
 		public virtual float getGoalChange(Goal goal)
@@ -40,11 +41,12 @@ public class GOBs
 		public float duration;
 		public virtual float getDuration()
 		{
-			return 0;
+			// TODO?
+			return duration;
 		}
 	}
 
-	public Action chooseAction(Action[] actions, Goal[] goals)
+	public static Action ChooseAction(Action[] actions, Goal[] goals)
 	{
 		// Find the most valuable goal to try and fulfil.
 		Goal topGoal = goals[0];
@@ -57,17 +59,17 @@ public class GOBs
 
 		// Find the best action to take.
 		Action bestAction = actions[0];
-		float bestValue = -actions[0].getGoalChange(topGoal);
+		float bestValue = Discontentment(bestAction, goals);
 
 		foreach (Action action in actions)
 		{
 			// We invert the change because a low change value is good
 			// (we want to reduce the value for the goal)
 			// but utilities are typically scale so high values are good.
-			float value = discontentment(action, goals);
+			float value = Discontentment(action, goals);
 
 			// We look for the lowest change (highest utility).
-			if (value > bestValue) {
+			if (value < bestValue) {
 				bestValue = value;
 				bestAction = action;
 			}
@@ -77,7 +79,7 @@ public class GOBs
 		return bestAction;
 	}
 
-	public float discontentment(Action action, Goal[] goals)
+	public static float Discontentment(Action action, Goal[] goals)
 	{
 		// Keep a running total.
 		float discontentment = 0;
